@@ -7,6 +7,32 @@ const app = require('../app');
 app.set('trust proxy', 1);
 
 module.exports = (req, res) => {
+  // Handle CORS preflight at the edge of the serverless function
+  if (req.method === 'OPTIONS') {
+    try {
+      const rawOrigins = process.env.FRONTEND_ORIGIN || '';
+      const allowed = rawOrigins
+        .split(',')
+        .map(o => o.trim())
+        .filter(Boolean);
+      const getHost = (url) => {
+        try { return new URL(url).hostname; } catch { return url.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+      };
+      const origin = req.headers.origin || '';
+      const ok = !allowed.length || (origin && allowed.map(getHost).includes(getHost(origin)));
+      if (ok && origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin.replace(/\/$/, ''));
+      }
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return res.status(204).end();
+    } catch (_) {
+      // Fallthrough to app on any unexpected error
+    }
+  }
+
   // Vercel mounts this function at /api/* and strips the "/api" prefix from req.url.
   // Our Express app mounts routes at '/api/*', so we need to re-add the prefix here.
   if (!req.url.startsWith('/api')) {
