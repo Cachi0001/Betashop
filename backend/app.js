@@ -22,9 +22,19 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser or same-origin requests (like curl, server-to-server)
     if (!origin) return callback(null, true);
-    const normalizedOrigin = origin.replace(/\/$/, '');
     if (!allowedOrigins.length) return callback(null, true);
-    const ok = allowedOrigins.some(allowed => normalizedOrigin === allowed);
+
+    // Extract hostnames for comparison (protocol-agnostic)
+    const getHost = (url) => {
+      try { return new URL(url).hostname; } catch { return url.replace(/^https?:\/\//, '').replace(/\/$/, ''); }
+    };
+    const requestHost = getHost(origin);
+    const allowedHosts = allowedOrigins.map(getHost);
+    const ok = allowedHosts.some(h => h === requestHost);
+
+    if (!ok && process.env.NODE_ENV !== 'production') {
+      console.warn('[CORS] Blocked origin:', origin, 'Allowed:', allowedOrigins);
+    }
     return callback(ok ? null : new Error('CORS: Origin not allowed'), ok);
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -33,7 +43,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Explicitly handle preflight for all routes
 app.options('*', cors(corsOptions));
 
 app.use(morgan('dev'));

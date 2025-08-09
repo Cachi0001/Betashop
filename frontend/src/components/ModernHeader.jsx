@@ -121,7 +121,7 @@ function ModernHeader({ onSearch, onMenuClick }) {
                 <NavigationMenuItem>
                   <NavigationMenuLink 
                     className={`${navigationMenuTriggerStyle()} text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 transition-all duration-300 border border-purple-500/30 rounded-lg`}
-                    href="https://twitter.com/shopnaija"
+                    href="https://twitter.com/Caleb0533"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

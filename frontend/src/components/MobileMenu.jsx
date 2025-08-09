@@ -73,8 +73,8 @@ function MobileMenu({ isOpen, onClose }) {
               </div>
               <div className="flex items-center gap-2">
                 <Twitter className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                <a href="https://twitter.com/shopnaija" target="_blank" rel="noopener noreferrer" className="text-xs hover:text-purple-400">
-                  @shopnaija
+                <a href="https://twitter.com/Caleb0533" target="_blank" rel="noopener noreferrer" className="text-xs hover:text-purple-400">
+                  @Caleb0533
                 </a>
               </div>
             </div>
