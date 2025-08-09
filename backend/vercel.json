@@ -1,3 +1,14 @@
 {
-  "version": 2
+  "version": 2,
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "methods": ["OPTIONS"],
+      "dest": "api/[...all].js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "api/[...all].js"
+    }
+  ]
 }
