@@ -5,8 +5,12 @@ const productsController = require('../controllers/products.controller');
 const { authenticateToken, requireAdmin } = require('../middleware/auth.middleware');
 const { validate, productSchema } = require('../middleware/validation.middleware');
 
-// Configure multer for file uploads
-const upload = multer({ dest: 'uploads/' });
+// Configure multer for file uploads (memory storage for serverless compatibility)
+// Vercel serverless functions have a read-only filesystem, so we cannot write to disk.
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB per file limit (adjust as needed)
+});
 
 // Public routes
 router.get('/', productsController.getProducts);

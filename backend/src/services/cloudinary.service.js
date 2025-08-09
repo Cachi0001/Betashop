@@ -1,15 +1,32 @@
 const cloudinary = require('../config/cloudinary.config');
+const { Readable } = require('stream');
+
+// Helper: upload from Multer memory buffer using Cloudinary upload_stream
+const uploadFromBuffer = (buffer, options = {}) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      if (error) return reject(error);
+      resolve(result);
+    });
+    Readable.from(buffer).pipe(stream);
+  });
+};
 
 const uploadImage = async (file, folder = 'products') => {
   try {
-    const result = await cloudinary.uploader.upload(file.path, {
+    const useBuffer = !!file.buffer; // Multer memory storage
+    const options = {
       folder: folder,
       transformation: [
         { width: 800, height: 800, crop: 'fill' },
         { quality: 'auto' },
         { format: 'auto' }
       ]
-    });
+    };
+
+    const result = useBuffer
+      ? await uploadFromBuffer(file.buffer, options)
+      : await cloudinary.uploader.upload(file.path, options);
 
     return {
       url: result.secure_url,
@@ -43,11 +60,15 @@ const deleteImage = async (publicId) => {
 
 const upload3DModel = async (file, folder = '3d-models') => {
   try {
-    const result = await cloudinary.uploader.upload(file.path, {
+    const options = {
       folder: folder,
       resource_type: 'raw', // For non-image files
       format: 'gltf'
-    });
+    };
+
+    const result = file.buffer
+      ? await uploadFromBuffer(file.buffer, options)
+      : await cloudinary.uploader.upload(file.path, options);
 
     return {
       url: result.secure_url,
