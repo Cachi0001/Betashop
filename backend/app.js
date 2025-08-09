@@ -85,6 +85,27 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Debug: list all routes (temporary helper)
+app.get('/api/_routes', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // Route middleware
+      routes.push({ method: Object.keys(middleware.route.methods)[0].toUpperCase(), path: middleware.route.path });
+    } else if (middleware.name === 'router' && middleware.handle.stack) {
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          const methods = Object.keys(handler.route.methods)
+            .filter(Boolean)
+            .map((m) => m.toUpperCase());
+          methods.forEach((m) => routes.push({ method: m, path: handler.route.path, base: middleware.regexp?.toString() }));
+        }
+      });
+    }
+  });
+  res.json({ routes });
+});
+
 app.get('/', (req, res) => {
   res.send('E-commerce Backend API is running!');
 });
