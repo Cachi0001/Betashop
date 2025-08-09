@@ -91,7 +91,7 @@ function Header({ onSearch, onMenuClick }) {
                 <NavigationMenuItem>
                   <NavigationMenuLink 
                     className={`${navigationMenuTriggerStyle()} text-white bg-purple-600 hover:bg-purple-700`}
-                    href="https://twitter.com/shopnaija"
+                    href="https://twitter.com/Caleb0533"
                     target="_blank"
                     rel="noopener noreferrer"
                   >

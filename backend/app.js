@@ -14,12 +14,27 @@ const rawOrigins = process.env.FRONTEND_ORIGIN || '';
 const allowedOrigins = rawOrigins
   .split(',')
   .map(o => o.trim())
-  .filter(Boolean);
+  .filter(Boolean)
+  // Normalize: remove trailing slashes
+  .map(o => o.replace(/\/$/, ''));
 
-app.use(cors({
-  origin: allowedOrigins.length ? allowedOrigins : true,
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser or same-origin requests (like curl, server-to-server)
+    if (!origin) return callback(null, true);
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    if (!allowedOrigins.length) return callback(null, true);
+    const ok = allowedOrigins.some(allowed => normalizedOrigin === allowed);
+    return callback(ok ? null : new Error('CORS: Origin not allowed'), ok);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+// Explicitly handle preflight for all routes
+app.options('*', cors(corsOptions));
 
 app.use(morgan('dev'));
 
