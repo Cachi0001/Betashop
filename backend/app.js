@@ -8,7 +8,18 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+// Configure CORS to explicitly allow the frontend origin(s)
+// FRONTEND_ORIGIN can be a single origin or comma-separated list
+const rawOrigins = process.env.FRONTEND_ORIGIN || '';
+const allowedOrigins = rawOrigins
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  credentials: true,
+}));
 
 app.use(morgan('dev'));
 
@@ -41,6 +52,15 @@ app.use('/api/whatsapp', require('./src/routes/whatsapp.routes'));
 app.use('/api/upload', require('./src/routes/upload.routes'));
 app.use('/api/admin', require('./src/routes/admin-earnings.routes'));
 
+// Health endpoints that work on Vercel (function wraps requests to start with /api)
+app.get('/api', (req, res) => {
+  res.send('E-commerce Backend API is running!');
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.get('/', (req, res) => {
   res.send('E-commerce Backend API is running!');
 });
@@ -48,4 +68,3 @@ app.get('/', (req, res) => {
 app.use(require('./src/middleware/error.middleware'));
 
 module.exports = app;
-
