@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
-import { Plus, Edit, Trash2, Package } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, RotateCcw } from 'lucide-react';
 import ProductForm from './ProductForm';
+import { API_BASE } from '../../lib/apiBase';
+
+ 
 
 function ProductManagement() {
   const [products, setProducts] = useState([]);
@@ -11,10 +14,11 @@ function ProductManagement() {
   const [error, setError] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [showArchived]);
 
   const fetchProducts = async () => {
     try {
@@ -30,7 +34,9 @@ function ProductManagement() {
       const admin = JSON.parse(adminData);
       
       // Fetch all products and filter by admin ID
-      const response = await fetch('http://localhost:3000/api/products', {
+      const url = new URL(`${API_BASE}/products`);
+      if (showArchived) url.searchParams.set('include_archived', 'true');
+      const response = await fetch(url.toString(), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -53,14 +59,34 @@ function ProductManagement() {
     }
   };
 
+  const handleRestoreProduct = async (productId, productName) => {
+    if (!confirm(`Restore archived product "${productName}"?`)) return;
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/products/${productId}/restore`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message || 'Product restored successfully!');
+        fetchProducts();
+      } else {
+        alert('Failed to restore product: ' + (data.error || 'Unknown error'));
+      }
+    } catch (e) {
+      alert('Error restoring product: ' + e.message);
+    }
+  };
+
   const handleDeleteProduct = async (productId, productName) => {
-    if (!confirm(`Are you sure you want to delete "${productName}"?`)) {
+    if (!confirm(`Are you sure you want to archive "${productName}"?`)) {
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
+      const response = await fetch(`${API_BASE}/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -70,13 +96,13 @@ function ProductManagement() {
       const data = await response.json();
       
       if (data.success) {
-        alert('Product deleted successfully!');
+        alert(data.message || 'Product archived successfully!');
         fetchProducts(); // Refresh the list
       } else {
-        alert('Failed to delete product: ' + (data.error || 'Unknown error'));
+        alert('Failed to archive product: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
-      alert('Error deleting product: ' + err.message);
+      alert('Error archiving product: ' + err.message);
     }
   };
 
@@ -101,13 +127,19 @@ function ProductManagement() {
           <Package className="w-5 h-5" />
           Product Management
         </CardTitle>
-        <Button 
-          className="bg-purple-600 hover:bg-purple-700"
-          onClick={() => setIsFormOpen(true)}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} />
+            Show archived
+          </label>
+          <Button 
+            className="bg-purple-600 hover:bg-purple-700"
+            onClick={() => setIsFormOpen(true)}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent>
@@ -134,9 +166,13 @@ function ProductManagement() {
                     <Badge variant={product.stock_quantity > 0 ? 'default' : 'destructive'}>
                       {product.stock_quantity} in stock
                     </Badge>
+                    {product.is_deleted && (
+                      <Badge variant="destructive">Archived</Badge>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {!product.is_deleted && (
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -147,6 +183,8 @@ function ProductManagement() {
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
+                  )}
+                  {!product.is_deleted ? (
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -155,6 +193,15 @@ function ProductManagement() {
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
+                  ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleRestoreProduct(product.id, product.name)}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                  )}
                 </div>
               </div>
             ))}

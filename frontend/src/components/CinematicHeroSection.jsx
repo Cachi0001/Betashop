@@ -347,7 +347,7 @@ function CinematicHeroSection({ products, loading }) {
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-black/60 backdrop-blur-sm rounded-xl p-3 border border-purple-500/20">
                       <p className="text-white text-sm font-medium">
-                        {currentProduct.admins?.business_name || 'Shop Naija Seller'}
+                        {currentProduct.admins?.business_name || 'Beta shop Seller'}
                       </p>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -534,7 +534,7 @@ function CinematicHeroSection({ products, loading }) {
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-black/60 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
                         <p className="text-white text-sm font-medium">
-                          {currentProduct.admins?.business_name || 'Shop Naija Seller'}
+                          {currentProduct.admins?.business_name || 'Beta shop Seller'}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />

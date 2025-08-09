@@ -80,6 +80,7 @@ router.post('/recalc-prices', productsController.recalcAllPrices);
 router.post('/', validate(productSchema), productsController.createProduct);
 router.put('/:id', productsController.updateProduct);
 router.delete('/:id', productsController.deleteProduct);
+router.post('/:id/restore', productsController.restoreProduct);
 router.post('/:id/images', upload.array('images', 5), productsController.uploadProductImages);
 
 module.exports = router;

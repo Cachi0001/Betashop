@@ -6,6 +6,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { X, Package, ImageIcon } from 'lucide-react';
 import { productToast, authErrorToast, networkErrorToast } from '../../utils/toast';
 import { toast } from '../../hooks/use-toast';
+import { API_BASE } from '../../lib/apiBase';
+
+ 
 
 function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
     const [formData, setFormData] = useState({
@@ -94,7 +97,7 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
     const testToken = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:3000/api/auth/test-token', {
+            const response = await fetch(`${API_BASE}/auth/test-token`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -108,7 +111,7 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/categories');
+            const response = await fetch(`${API_BASE}/categories`);
             const data = await response.json();
             if (data.success) {
                 const cats = data.data.categories || [];
@@ -169,7 +172,7 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                 console.log('📸 PRODUCT FORM - Uploading image:', file.name);
                 
                 // Upload to backend
-                const response = await fetch('http://localhost:3000/api/upload/image', {
+                const response = await fetch(`${API_BASE}/upload/image`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -248,8 +251,8 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
             console.log('🎯 FRONTEND - Product data being sent:', JSON.stringify(productData, null, 2));
 
             const url = editingProduct 
-                ? `http://localhost:3000/api/products/${editingProduct.id}`
-                : 'http://localhost:3000/api/products';
+                ? `${API_BASE}/products/${editingProduct.id}`
+                : `${API_BASE}/products`;
             
             const method = editingProduct ? 'PUT' : 'POST';
 

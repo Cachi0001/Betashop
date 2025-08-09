@@ -61,7 +61,7 @@ function Header({ onSearch, onMenuClick }) {
                 <Menu className="w-5 h-5" />
               </Button>
               <h1 className="text-lg lg:text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Shop Naija
+                Beta shop
               </h1>
             </div>
 

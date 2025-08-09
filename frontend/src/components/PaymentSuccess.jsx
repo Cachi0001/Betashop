@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { useDispatch } from 'react-redux';
 import { clearCart } from '../store/cartSlice';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -15,8 +16,12 @@ import {
   MapPin,
   ExternalLink
 } from 'lucide-react';
+import { API_BASE } from '../lib/apiBase';
+
+ 
 
 function PaymentSuccess({ paymentResult, orderData, onClose }) {
+
   const dispatch = useDispatch();
   const [whatsappLinks, setWhatsappLinks] = useState([]);
   const [isLoadingWhatsApp, setIsLoadingWhatsApp] = useState(false);
@@ -36,7 +41,7 @@ function PaymentSuccess({ paymentResult, orderData, onClose }) {
       setIsLoadingWhatsApp(true);
       console.log('📱 PAYMENT SUCCESS - Generating WhatsApp links for order:', orderId);
       
-      const response = await fetch(`http://localhost:3000/api/whatsapp/orders/${orderId}`);
+      const response = await fetch(`${API_BASE}/whatsapp/orders/${orderId}`);
       const data = await response.json();
       
       if (data.success) {

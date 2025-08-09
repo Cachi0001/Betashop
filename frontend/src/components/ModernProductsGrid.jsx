@@ -255,7 +255,7 @@ function ModernProductsGrid({ products, loading, error, onProductSelect, onRetry
                   </h3>
 
                   <p className="text-sm text-gray-400 mb-3 line-clamp-1">
-                    {product.admins?.business_name || 'Shop Naija Seller'}
+                    {product.admins?.business_name || 'Beta shop Seller'}
                   </p>
 
                   <div className="flex items-center justify-between">

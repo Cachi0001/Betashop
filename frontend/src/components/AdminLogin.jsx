@@ -130,15 +130,6 @@ function AdminLogin() {
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link to="/owner/register" className="text-purple-600 hover:underline font-medium">
-                  Register as Owner
-                </Link>
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

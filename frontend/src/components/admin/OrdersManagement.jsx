@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -17,8 +18,12 @@ import {
   X
 } from 'lucide-react';
 import { successToast, errorToast, warningToast } from '../../utils/toast';
+import { API_BASE } from '../../lib/apiBase';
+
+ 
 
 function OrdersManagement() {
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,7 +46,7 @@ function OrdersManagement() {
       }
 
       console.log('📋 ORDERS MANAGEMENT - Fetching orders...');
-      const response = await fetch('http://localhost:3000/api/orders', {
+      const response = await fetch(`${API_BASE}/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

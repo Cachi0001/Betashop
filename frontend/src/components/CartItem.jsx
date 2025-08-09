@@ -70,7 +70,7 @@ function CartItem({ item }) {
             {item.product.name}
           </h4>
           <p className="text-xs text-gray-400 mt-1">
-            {item.product.admins?.business_name || 'Shop Naija Seller'}
+            {item.product.admins?.business_name || 'Beta shop Seller'}
           </p>
           
           {/* Stock Status */}

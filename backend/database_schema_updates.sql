@@ -39,6 +39,14 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_admin_id ON order_items(admin_id);
 
+-- Soft delete support for products
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE;
+
+-- Helpful index for filtering out archived products
+CREATE INDEX IF NOT EXISTS idx_products_is_deleted ON products(is_deleted);
+
 -- Create updated_at trigger for orders table
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

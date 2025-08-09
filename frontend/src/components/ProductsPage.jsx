@@ -13,6 +13,7 @@ import {
     ShoppingCart,
     Package
 } from 'lucide-react';
+import { API_BASE } from '../lib/apiBase';
 
 function ProductsPage() {
     const [products, setProducts] = useState([]);
@@ -32,7 +33,7 @@ function ProductsPage() {
             setLoading(true);
             console.log('🛍️ PRODUCTS PAGE - Fetching products...');
             
-            const response = await fetch('http://localhost:3000/api/products');
+            const response = await fetch(`${API_BASE}/products`);
             const data = await response.json();
             
             console.log('🛍️ PRODUCTS PAGE - API response:', data);
@@ -94,7 +95,7 @@ function ProductsPage() {
                             Discover Amazing Products
                         </h1>
                         <p className="text-xl md:text-2xl mb-8 opacity-90">
-                            Experience seamless shopping with Shop Naija
+                            Experience seamless shopping with Beta shop
                         </p>
                         <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                             <Package className="w-4 h-4 mr-2" />

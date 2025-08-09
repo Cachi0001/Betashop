@@ -28,6 +28,32 @@ const recalcAllPrices = async () => {
   }
 };
 
+const restoreProduct = async (productId, adminId) => {
+  try {
+    const { data: existingProduct, error: fetchError } = await supabaseAdmin
+      .from("products")
+      .select("admin_id, is_deleted")
+      .eq("id", productId)
+      .single();
+
+    if (fetchError || !existingProduct) throw new Error("Product not found or unauthorized");
+    if (existingProduct.admin_id !== adminId) throw new Error("Unauthorized to restore this product");
+    if (existingProduct.is_deleted !== true) {
+      return { message: "Product is not archived" };
+    }
+
+    const { error } = await supabaseAdmin
+      .from("products")
+      .update({ is_deleted: false, deleted_at: null })
+      .eq("id", productId);
+
+    if (error) throw error;
+    return { message: "Product restored successfully" };
+  } catch (error) {
+    throw new Error(`Failed to restore product: ${error.message}`);
+  }
+};
+
 const createProduct = async (adminId, productData) => {
   try {
     console.log('🔧 PRODUCTS SERVICE - Create product started');
@@ -117,11 +143,15 @@ const getProductById = async (productId) => {
     // First check if product exists
     const { data: checkResult, error: checkError } = await supabaseAdmin
       .from("products")
-      .select("id")
-      .eq("id", productId);
+      .select("id, is_deleted")
+      .eq("id", productId)
+      .single();
 
     if (checkError) throw checkError;
-    if (!checkResult || checkResult.length === 0) {
+    if (!checkResult) {
+      throw new Error('Product not found');
+    }
+    if (checkResult.is_deleted === true) {
       throw new Error('Product not found');
     }
 
@@ -133,7 +163,8 @@ const getProductById = async (productId) => {
         categories(name, slug),
         admins(business_name, address)
       `)
-      .eq("id", productId);
+      .eq("id", productId)
+      .eq("is_deleted", false);
 
     if (error) throw error;
     if (!productDetails || productDetails.length === 0) {
@@ -158,6 +189,11 @@ const getProducts = async (filters, page = 1, limit = 10) => {
       categories(name, slug),
       admins(business_name, address)
     `, { count: "exact" });
+
+    // Exclude soft-deleted products by default unless explicitly included
+    if (!filters?.include_archived) {
+      query = query.eq("is_deleted", false);
+    }
 
     if (filters.admin_id) {
       query = query.eq("admin_id", filters.admin_id);
@@ -216,20 +252,24 @@ const deleteProduct = async (productId, adminId) => {
   try {
     const { data: existingProduct, error: fetchError } = await supabaseAdmin
       .from("products")
-      .select("admin_id")
+      .select("admin_id, is_deleted")
       .eq("id", productId)
       .single();
 
     if (fetchError || !existingProduct) throw new Error("Product not found or unauthorized");
     if (existingProduct.admin_id !== adminId) throw new Error("Unauthorized to delete this product");
+    if (existingProduct.is_deleted === true) {
+      return { message: "Product already archived" };
+    }
 
+    // Soft delete: mark as deleted and set timestamp
     const { error } = await supabaseAdmin
       .from("products")
-      .delete()
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() })
       .eq("id", productId);
 
     if (error) throw error;
-    return { message: "Product deleted successfully" };
+    return { message: "Product archived successfully" };
   } catch (error) {
     throw new Error(`Failed to delete product: ${error.message}`);
   }
@@ -241,6 +281,7 @@ module.exports = {
   getProducts,
   updateProduct,
   deleteProduct,
+  restoreProduct,
   recalcAllPrices,
 };
 

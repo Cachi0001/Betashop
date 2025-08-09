@@ -18,6 +18,9 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from './store/productsThunks';
 import './App.css';
+import { API_BASE } from './lib/apiBase';
+
+ 
 
 function MainProductsPage() {
   const dispatch = useDispatch();
@@ -81,7 +84,7 @@ function MainProductsPage() {
     });
     
     // Test direct API call
-    fetch('http://localhost:3000/api/products?_t=' + Date.now())
+    fetch(`${API_BASE}/products?_t=` + Date.now())
       .then(r => r.json())
       .then(data => {
         console.log('🐛 DEBUG - Direct API call result:', data);

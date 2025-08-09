@@ -61,10 +61,10 @@ function Footer() {
           <div className="col-span-2 sm:col-span-3 lg:col-span-2 space-y-3 lg:space-y-6 mb-6 lg:mb-0">
             <div>
               <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Shop Naija
+                Beta shop
               </h2>
               <p className="text-gray-400 mt-3 leading-relaxed">
-                Experience the future of online shopping with our innovative Shop Naija platform. 
+                Experience the future of online shopping with our innovative Beta shop platform. 
                 Discover, explore, and shop Nigerian products like never before.
               </p>
             </div>
@@ -139,7 +139,7 @@ function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 lg:gap-4">
           <div className="text-gray-400 text-xs lg:text-sm text-center sm:text-left">
-            © 2024 Shop Naija. All rights reserved. Built with ❤️ in Nigeria.
+            © 2024 Beta shop. All rights reserved. Built with ❤️ in Nigeria.
           </div>
           
           <div className="flex items-center gap-2 lg:gap-6">

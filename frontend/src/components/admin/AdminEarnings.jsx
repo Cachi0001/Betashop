@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -10,8 +11,12 @@ import {
   RefreshCw,
   ShoppingCart
 } from 'lucide-react';
+import { API_BASE } from '../../lib/apiBase';
+
+ 
 
 function AdminEarnings() {
+
   const [earnings, setEarnings] = useState({
     totalEarnings: 0,
     pendingEarnings: 0,
@@ -30,7 +35,7 @@ function AdminEarnings() {
       const token = localStorage.getItem('token');
       
       // Fetch orders to calculate earnings
-      const ordersResponse = await fetch('http://localhost:3000/api/orders', {
+      const ordersResponse = await fetch(`${API_BASE}/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -30,7 +30,7 @@ function MobileMenu({ isOpen, onClose }) {
       <SheetContent side="left" className="w-72 bg-slate-900/95 backdrop-blur-lg border-0 shadow-2xl border-r border-slate-700">
         <SheetHeader className="text-left pb-6 px-2">
           <SheetTitle className="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Shop Naija
+            Beta shop
           </SheetTitle>
         </SheetHeader>
 

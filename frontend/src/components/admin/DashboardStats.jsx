@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '../ui/card';
 import { Package, ShoppingCart, DollarSign, Users } from 'lucide-react';
+import { API_BASE } from '../../lib/apiBase';
+
+ 
 
 function DashboardStats() {
   const [stats, setStats] = useState([
@@ -52,7 +55,7 @@ function DashboardStats() {
       console.log('📊 DASHBOARD STATS - Fetching stats for admin:', admin.id);
       
       // Fetch ALL products first, then filter by admin
-      const productsResponse = await fetch('http://localhost:3000/api/products');
+      const productsResponse = await fetch(`${API_BASE}/products`);
       const productsData = await productsResponse.json();
       
       console.log('📊 DASHBOARD STATS - All products:', productsData.data?.products?.length || 0);
@@ -69,7 +72,7 @@ function DashboardStats() {
       let uniqueCustomers = 0;
       
       try {
-        const ordersResponse = await fetch('http://localhost:3000/api/orders', {
+        const ordersResponse = await fetch(`${API_BASE}/orders`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

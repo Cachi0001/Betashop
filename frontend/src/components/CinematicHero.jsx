@@ -243,7 +243,7 @@ function CinematicHero({ products, loading, onProductSelect }) {
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
                         <p className="text-white text-sm font-medium">
-                          {currentProduct.admins?.business_name || 'Shop Naija Seller'}
+                          {currentProduct.admins?.business_name || 'Beta shop Seller'}
                         </p>
                       </div>
                     </div>

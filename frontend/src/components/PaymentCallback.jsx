@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
+
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { clearCart } from '../store/cartSlice';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { CheckCircle, AlertCircle, MessageCircle, ExternalLink, Loader2 } from 'lucide-react';
+import { API_BASE } from '../lib/apiBase';
+
+ 
 
 function PaymentCallback() {
+
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -35,7 +40,7 @@ function PaymentCallback() {
       console.log('🔍 PAYMENT CALLBACK - Verifying payment:', reference);
       
       // Verify payment with backend
-      const response = await fetch(`http://localhost:3000/api/payments/verify/${reference}`);
+      const response = await fetch(`${API_BASE}/payments/verify/${reference}`);
       const data = await response.json();
       
       console.log('🔍 PAYMENT CALLBACK - Verification result:', data);
@@ -66,7 +71,7 @@ function PaymentCallback() {
     try {
       console.log('📱 PAYMENT CALLBACK - Generating WhatsApp links for order:', orderId);
       
-      const response = await fetch(`http://localhost:3000/api/whatsapp/orders/${orderId}`);
+      const response = await fetch(`${API_BASE}/whatsapp/orders/${orderId}`);
       const data = await response.json();
       
       if (data.success && data.data.whatsapp_links) {
@@ -139,7 +144,7 @@ function PaymentCallback() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       {/* Print Header - Only visible when printing */}
       <div className="print-header hidden print:block">
-        <h1>Shop Naija</h1>
+        <h1>Beta shop</h1>
         <p>Your Nigerian Marketplace</p>
       </div>
       
@@ -226,14 +231,14 @@ function PaymentCallback() {
               const printContent = document.createElement('div');
               printContent.innerHTML = `
                 <div class="print-header">
-                  <h1>Shop Naija</h1>
+                  <h1>Beta shop</h1>
                   <p>Your Nigerian Marketplace - Payment Receipt</p>
                 </div>
                 <div style="margin: 20px 0;">
                   <h2>Payment Successful!</h2>
                   <p>Order Total: ${paymentData?.order ? formatPrice(paymentData.order.total_amount) : 'N/A'}</p>
                   <p>Date: ${new Date().toLocaleDateString()}</p>
-                  <p>Thank you for shopping with Shop Naija!</p>
+                  <p>Thank you for shopping with Beta shop!</p>
                 </div>
               `;
               
@@ -241,7 +246,7 @@ function PaymentCallback() {
               printWindow.document.write(`
                 <html>
                   <head>
-                    <title>Shop Naija - Payment Receipt</title>
+                    <title>Beta shop - Payment Receipt</title>
                     <style>
                       body { font-family: Arial, sans-serif; padding: 20px; }
                       .print-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }

@@ -34,8 +34,8 @@ const recalcAllPrices = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, category_id, search } = req.query;
-    const filters = { category_id, search };
+    const { page = 1, limit = 10, category_id, search, include_archived } = req.query;
+    const filters = { category_id, search, include_archived: include_archived === 'true' };
     
     const result = await productsService.getProducts(filters, parseInt(page), parseInt(limit));
     
@@ -105,6 +105,16 @@ const deleteProduct = async (req, res, next) => {
   }
 };
 
+const restoreProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await productsService.restoreProduct(id, req.user.id);
+    res.status(200).json({ success: true, message: result.message });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const uploadProductImages = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -149,5 +159,6 @@ module.exports = {
   deleteProduct,
   uploadProductImages,
   recalcAllPrices,
+  restoreProduct,
 };
 

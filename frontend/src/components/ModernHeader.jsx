@@ -81,7 +81,7 @@ function ModernHeader({ onSearch, onMenuClick }) {
                   <Store className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-lg lg:text-xl font-bold text-white">
-                  Shop Naija
+                  Beta shop
                 </h1>
               </div>
             </div>
