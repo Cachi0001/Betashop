@@ -9,7 +9,7 @@ function DashboardHeader({ admin }) {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/');
+    navigate('/admin/login');
   };
 
   return (
