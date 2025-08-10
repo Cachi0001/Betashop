@@ -14,7 +14,11 @@ const uploadFromBuffer = (buffer, options = {}) => {
 
 const uploadImage = async (file, folder = 'products') => {
   try {
-    const useBuffer = !!file.buffer; // Multer memory storage
+    // Always use buffer for memory storage (production-friendly)
+    if (!file.buffer) {
+      throw new Error('File buffer not available. Ensure multer is configured with memoryStorage.');
+    }
+
     const options = {
       folder: folder,
       transformation: [
@@ -24,9 +28,7 @@ const uploadImage = async (file, folder = 'products') => {
       ]
     };
 
-    const result = useBuffer
-      ? await uploadFromBuffer(file.buffer, options)
-      : await cloudinary.uploader.upload(file.path, options);
+    const result = await uploadFromBuffer(file.buffer, options);
 
     return {
       url: result.secure_url,
@@ -60,15 +62,18 @@ const deleteImage = async (publicId) => {
 
 const upload3DModel = async (file, folder = '3d-models') => {
   try {
+    // Always use buffer for memory storage (production-friendly)
+    if (!file.buffer) {
+      throw new Error('File buffer not available. Ensure multer is configured with memoryStorage.');
+    }
+
     const options = {
       folder: folder,
       resource_type: 'raw', // For non-image files
       format: 'gltf'
     };
 
-    const result = file.buffer
-      ? await uploadFromBuffer(file.buffer, options)
-      : await cloudinary.uploader.upload(file.path, options);
+    const result = await uploadFromBuffer(file.buffer, options);
 
     return {
       url: result.secure_url,

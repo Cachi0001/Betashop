@@ -15,8 +15,8 @@ async function testProductCRUD() {
     try {
       // Try to login first
       const loginResponse = await axios.post('http://localhost:3000/api/auth/login', {
-        email: 'producttest@example.com',
-        password: 'password123'
+        email: 'onyemechicaleb4@gmail.com',
+        password: '11111111'
       });
       authToken = loginResponse.data.data.token;
       console.log('✅ Admin logged in successfully');

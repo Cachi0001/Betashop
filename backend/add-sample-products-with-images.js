@@ -53,13 +53,18 @@ async function addSampleProducts() {
     const categoryId = categories[0].id;
     console.log('📂 Using category:', categories[0].name);
     
-    // Sample products with images
+    // Helper function to calculate customer price with new structure
+    const calculateCustomerPrice = (adminPrice) => {
+      return adminPrice + 5000 + Math.round(adminPrice * 0.07);
+    };
+
+    // Sample products with images using new pricing structure
     const products = [
       {
         name: 'iPhone 15 Pro Max',
         description: 'Latest iPhone with advanced camera system and A17 Pro chip. Perfect for photography and gaming.',
         admin_price: 850000,
-        customer_price: 913750, // 7.5% markup
+        customer_price: calculateCustomerPrice(850000), // ₦5,000 + 7% = ₦914,500
         stock_quantity: 15,
         images: sampleImages.phone,
         admin_id: adminId,
@@ -70,7 +75,7 @@ async function addSampleProducts() {
         name: 'MacBook Pro 16-inch',
         description: 'Powerful laptop with M3 Pro chip, perfect for professionals and creators.',
         admin_price: 1200000,
-        customer_price: 1290000, // 7.5% markup
+        customer_price: calculateCustomerPrice(1200000), // ₦5,000 + 7% = ₦1,289,000
         stock_quantity: 8,
         images: sampleImages.laptop,
         admin_id: adminId,
@@ -81,7 +86,7 @@ async function addSampleProducts() {
         name: 'Sony WH-1000XM5 Headphones',
         description: 'Premium noise-canceling headphones with exceptional sound quality.',
         admin_price: 180000,
-        customer_price: 193500, // 7.5% markup
+        customer_price: calculateCustomerPrice(180000), // ₦5,000 + 7% = ₦197,600
         stock_quantity: 25,
         images: sampleImages.headphones,
         admin_id: adminId,
@@ -92,7 +97,7 @@ async function addSampleProducts() {
         name: 'Apple Watch Series 9',
         description: 'Advanced smartwatch with health monitoring and fitness tracking.',
         admin_price: 220000,
-        customer_price: 236500, // 7.5% markup
+        customer_price: calculateCustomerPrice(220000), // ₦5,000 + 7% = ₦240,400
         stock_quantity: 12,
         images: sampleImages.watch,
         admin_id: adminId,

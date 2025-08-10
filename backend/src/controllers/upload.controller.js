@@ -13,20 +13,12 @@ const uploadImage = async (req, res) => {
       });
     }
 
-    console.log('📸 UPLOAD CONTROLLER - File received:', req.file.filename);
+    console.log('📸 UPLOAD CONTROLLER - File received:', req.file.originalname, 'Size:', req.file.size);
 
-    // Upload to Cloudinary
+    // Upload to Cloudinary (using memory buffer)
     const result = await cloudinaryService.uploadImage(req.file, 'products');
     
     console.log('✅ UPLOAD CONTROLLER - Image uploaded to Cloudinary:', result.url);
-
-    // Clean up temporary file
-    try {
-      await fs.unlink(req.file.path);
-      console.log('🧹 UPLOAD CONTROLLER - Temporary file cleaned up');
-    } catch (cleanupError) {
-      console.warn('⚠️ UPLOAD CONTROLLER - Failed to cleanup temp file:', cleanupError.message);
-    }
 
     res.json({
       success: true,
@@ -40,15 +32,6 @@ const uploadImage = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ UPLOAD CONTROLLER - Image upload error:', error);
-    
-    // Clean up temporary file on error
-    if (req.file) {
-      try {
-        await fs.unlink(req.file.path);
-      } catch (cleanupError) {
-        console.warn('⚠️ UPLOAD CONTROLLER - Failed to cleanup temp file after error:', cleanupError.message);
-      }
-    }
 
     res.status(500).json({
       success: false,
@@ -70,19 +53,10 @@ const uploadMultipleImages = async (req, res) => {
 
     console.log('📸 UPLOAD CONTROLLER - Files received:', req.files.length);
 
-    // Upload all images to Cloudinary
+    // Upload all images to Cloudinary (using memory buffers)
     const results = await cloudinaryService.uploadMultipleImages(req.files, 'products');
     
     console.log('✅ UPLOAD CONTROLLER - All images uploaded to Cloudinary');
-
-    // Clean up temporary files
-    const cleanupPromises = req.files.map(file => 
-      fs.unlink(file.path).catch(err => 
-        console.warn('⚠️ UPLOAD CONTROLLER - Failed to cleanup temp file:', err.message)
-      )
-    );
-    await Promise.all(cleanupPromises);
-    console.log('🧹 UPLOAD CONTROLLER - All temporary files cleaned up');
 
     res.json({
       success: true,
@@ -98,16 +72,6 @@ const uploadMultipleImages = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ UPLOAD CONTROLLER - Multiple images upload error:', error);
-    
-    // Clean up temporary files on error
-    if (req.files) {
-      const cleanupPromises = req.files.map(file => 
-        fs.unlink(file.path).catch(err => 
-          console.warn('⚠️ UPLOAD CONTROLLER - Failed to cleanup temp file after error:', err.message)
-        )
-      );
-      await Promise.all(cleanupPromises);
-    }
 
     res.status(500).json({
       success: false,
@@ -118,7 +82,8 @@ const uploadMultipleImages = async (req, res) => {
 
 const deleteImage = async (req, res) => {
   try {
-    const { publicId } = req.params;
+    // Decode the public ID from URL encoding
+    const publicId = decodeURIComponent(req.params.publicId);
     console.log('🗑️ UPLOAD CONTROLLER - Delete image request:', publicId);
     
     if (!publicId) {

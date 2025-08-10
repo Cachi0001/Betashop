@@ -4,19 +4,9 @@ const multer = require('multer');
 const uploadController = require('../controllers/upload.controller');
 const { authenticateToken, requireAdmin } = require('../middleware/auth.middleware');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/temp/'); // Temporary storage
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-  }
-});
-
+// Configure multer for file uploads using memory storage (production-friendly)
 const upload = multer({ 
-  storage: storage,
+  storage: multer.memoryStorage(), // Use memory storage instead of disk
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
