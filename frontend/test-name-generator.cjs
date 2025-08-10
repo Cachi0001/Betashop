@@ -5,16 +5,16 @@ const generateFootwearName = () => {
     const styles = ['Classic', 'Traditional', 'Modern', 'Comfort', 'Soft', 'Easy', 'Light', 'Flexible', 'Breathable', 'Casual'];
     const colors = ['Black', 'Brown', 'Tan', 'Camel', 'Dark Brown', 'Light Brown', 'Natural', 'Chocolate', 'Coffee', 'Mahogany'];
     const materials = ['Leather', 'Suede', 'Canvas', 'Fabric', 'Woven', 'Soft-sole', 'Rubber-sole', 'Cork-sole'];
-    
+
     const brand = brands[Math.floor(Math.random() * brands.length)];
     const type = types[Math.floor(Math.random() * types.length)];
     const style = styles[Math.floor(Math.random() * styles.length)];
     const color = colors[Math.floor(Math.random() * colors.length)];
     const material = materials[Math.floor(Math.random() * materials.length)];
-    
+
     // Generate random number for uniqueness
     const randomNum = Math.floor(Math.random() * 99) + 1;
-    
+
     // Different name patterns focused on African slip-on footwear
     const patterns = [
         `${brand} ${type}`,
@@ -28,7 +28,7 @@ const generateFootwearName = () => {
         `${color} ${material} ${type}`,
         `${brand} ${material} Slides`
     ];
-    
+
     return patterns[Math.floor(Math.random() * patterns.length)];
 };
 

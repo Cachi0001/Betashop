@@ -90,7 +90,7 @@ function ProductQuickView({ product, isOpen, onClose }) {
         <div className="grid md:grid-cols-2 gap-8 p-6">
           {/* Left Side - Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100" style={{ minHeight: '400px' }}>
               {product.model_url ? (
                 <ProductViewer 
                   modelUrl={product.model_url} 
@@ -102,8 +102,8 @@ function ProductQuickView({ product, isOpen, onClose }) {
                     ? product.images[selectedImageIndex] 
                     : product.images[selectedImageIndex]?.url}
                   alt={product.name}
-                  className="w-full h-full object-contain"
-                  style={{ width: '100%', height: '400px' }}
+                  className="w-full h-auto object-contain rounded-2xl"
+                  style={{ minHeight: '400px', maxHeight: '500px' }}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">

@@ -54,7 +54,9 @@ function MainProductsPage() {
   }, [dispatch]);
 
   const handleSearch = (query) => {
-    console.log('Search query:', query);
+    console.log('🔍 APP - Search query:', query);
+    // The search is already dispatched by ModernHeader, but we can add additional logic here if needed
+    // For example, analytics tracking, URL updates, etc.
   };
 
   const handleMenuClick = () => {

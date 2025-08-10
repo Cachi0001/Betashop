@@ -63,6 +63,7 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
     const [error, setError] = useState('');
     const [images, setImages] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isPasting, setIsPasting] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -78,7 +79,18 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                 }));
             }
             testToken(); // Test token when form opens
+            
+            // Add paste event listener
+            document.addEventListener('paste', handlePaste);
+        } else {
+            // Remove paste event listener when form closes
+            document.removeEventListener('paste', handlePaste);
         }
+        
+        // Cleanup on unmount
+        return () => {
+            document.removeEventListener('paste', handlePaste);
+        };
     }, [isOpen, editingProduct]);
 
     const loadAdminLocation = () => {
@@ -244,6 +256,87 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
 
     const removeImage = (index) => {
         setImages(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // Handle pasted images from clipboard
+    const handlePasteImages = async (clipboardItems) => {
+        const imageFiles = [];
+        
+        for (const item of clipboardItems) {
+            if (item.type.startsWith('image/')) {
+                imageFiles.push(item);
+            }
+        }
+        
+        if (imageFiles.length === 0) {
+            toast({
+                title: "No images found",
+                description: "Please copy an image to your clipboard first.",
+                variant: "destructive",
+                duration: 3000,
+            });
+            return;
+        }
+
+        console.log('📋 PRODUCT FORM - Pasting', imageFiles.length, 'images from clipboard...');
+        setIsPasting(true);
+        
+        // Show paste toast
+        const pasteToast = toast({
+            title: `Pasting ${imageFiles.length} image${imageFiles.length > 1 ? 's' : ''}...`,
+            variant: "default",
+            duration: 0, // Don't auto-dismiss
+        });
+        
+        try {
+            const uploadedImages = [];
+            
+            for (const file of imageFiles) {
+                // Create FormData for the file
+                const formData = new FormData();
+                formData.append('image', file, `pasted-image-${Date.now()}.${file.type.split('/')[1]}`);
+                
+                console.log('📋 PRODUCT FORM - Uploading pasted image:', file.type);
+                
+                // Upload to backend
+                const response = await fetch(`${API_BASE}/upload/image`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    uploadedImages.push(data.data.url);
+                    console.log('✅ PRODUCT FORM - Pasted image uploaded:', data.data.url);
+                } else {
+                    console.error('❌ PRODUCT FORM - Pasted image upload failed:', data.error);
+                    productToast.uploadError(`Pasted image: ${data.error}`);
+                }
+            }
+            
+            if (uploadedImages.length > 0) {
+                setImages(prev => [...prev, ...uploadedImages]);
+                productToast.uploadSuccess(uploadedImages.length);
+                console.log('✅ PRODUCT FORM - All pasted images uploaded successfully');
+            }
+        } catch (error) {
+            console.error('❌ PRODUCT FORM - Paste upload error:', error);
+            networkErrorToast('Failed to upload pasted images. Please try again.');
+        } finally {
+            setIsPasting(false);
+            pasteToast.dismiss();
+        }
+    };
+
+    // Handle paste events
+    const handlePaste = async (e) => {
+        e.preventDefault();
+        const clipboardItems = Array.from(e.clipboardData.items);
+        await handlePasteImages(clipboardItems);
     };
 
     const handleSubmit = async (e) => {
@@ -529,16 +622,20 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                         <div>
                             <div className="flex items-center justify-between mb-2">
                                 <label className="block text-sm font-medium">Product Images (Optional)</label>
-                                {uploadingImages && (
+                                {(uploadingImages || isPasting) && (
                                     <span className="text-sm text-blue-600 flex items-center gap-1">
                                         <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                        Uploading...
+                                        {isPasting ? 'Pasting...' : 'Uploading...'}
                                     </span>
                                 )}
                             </div>
                             <label 
                                 htmlFor="images" 
-                                className="block border-2 border-dashed border-gray-300 rounded-lg p-8 cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 group"
+                                className={`block border-2 border-dashed rounded-lg p-8 cursor-pointer transition-all duration-200 group ${
+                                    isPasting 
+                                        ? 'border-blue-400 bg-blue-50' 
+                                        : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
+                                }`}
                             >
                                 <div className="text-center">
                                     <ImageIcon className="mx-auto h-12 w-12 text-gray-400 group-hover:text-purple-500 transition-colors" />
@@ -546,9 +643,13 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                                         <span className="text-base font-medium text-gray-900 group-hover:text-purple-700">
                                             Click to upload images
                                         </span>
-                                        <p className="text-sm text-gray-500 mt-1">or drag and drop</p>
+                                        <p className="text-sm text-gray-500 mt-1">drag and drop, or paste from clipboard</p>
                                     </div>
                                     <p className="text-xs text-gray-400 mt-2">PNG, JPG up to 5MB each</p>
+                                    <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
+                                        <kbd className="px-2 py-1 bg-gray-100 rounded text-gray-600 font-mono">Ctrl+V</kbd>
+                                        <span>to paste images</span>
+                                    </div>
                                 </div>
                                 <input
                                     id="images"
