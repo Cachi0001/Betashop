@@ -3,12 +3,44 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { X, Package, ImageIcon } from 'lucide-react';
+import { X, Package, ImageIcon, Shuffle } from 'lucide-react';
 import { productToast, authErrorToast, networkErrorToast } from '../../utils/toast';
 import { toast } from '../../hooks/use-toast';
 import { API_BASE } from '../../lib/apiBase';
 
- 
+// African slip-on footwear name generator
+const generateFootwearName = () => {
+    const brands = ['Afro', 'Naija', 'Lagos', 'Kano', 'Eko', 'Sahel', 'Zuma', 'Baba', 'Mama', 'Royal'];
+    const types = ['Cover Shoes', 'Slip-ons', 'Sandals', 'Slides', 'Flats', 'Mules', 'Clogs', 'Easy-wear', 'Comfort Shoes', 'Open-toe'];
+    const styles = ['Classic', 'Traditional', 'Modern', 'Comfort', 'Soft', 'Easy', 'Light', 'Flexible', 'Breathable', 'Casual'];
+    const colors = ['Black', 'Brown', 'Tan', 'Camel', 'Dark Brown', 'Light Brown', 'Natural', 'Chocolate', 'Coffee', 'Mahogany'];
+    const materials = ['Leather', 'Suede', 'Canvas', 'Fabric', 'Woven', 'Soft-sole', 'Rubber-sole', 'Cork-sole'];
+    
+    const brand = brands[Math.floor(Math.random() * brands.length)];
+    const type = types[Math.floor(Math.random() * types.length)];
+    const style = styles[Math.floor(Math.random() * styles.length)];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const material = materials[Math.floor(Math.random() * materials.length)];
+    
+    // Generate random number for uniqueness
+    const randomNum = Math.floor(Math.random() * 99) + 1;
+    
+    // Different name patterns focused on African slip-on footwear
+    const patterns = [
+        `${brand} ${type}`,
+        `${color} ${type}`,
+        `${style} ${type}`,
+        `${brand} ${color} ${type}`,
+        `${material} ${type}`,
+        `${style} ${color} ${type}`,
+        `${brand} ${style} ${type}`,
+        `${type} ${randomNum}`,
+        `${color} ${material} ${type}`,
+        `${brand} ${material} Slides`
+    ];
+    
+    return patterns[Math.floor(Math.random() * patterns.length)];
+};
 
 function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
     const [formData, setFormData] = useState({
@@ -39,6 +71,11 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                 loadProductData();
             } else {
                 loadAdminLocation();
+                // Generate random footwear name for new products
+                setFormData(prev => ({
+                    ...prev,
+                    name: generateFootwearName()
+                }));
             }
             testToken(); // Test token when form opens
         }
@@ -279,9 +316,14 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                 }
                 onSuccess();
                 onClose();
-                // Reset form
+                // Reset form with new random name
                 setFormData({
-                    name: '', description: '', category_id: '', admin_price: '', stock_quantity: '1', attributes: {},
+                    name: generateFootwearName(), 
+                    description: '', 
+                    category_id: '', 
+                    admin_price: '', 
+                    stock_quantity: '1', 
+                    attributes: {},
                     location: { street: '', city: '', state: '', country: 'Nigeria' }
                 });
                 setImages([]);
@@ -334,13 +376,33 @@ function ProductForm({ isOpen, onClose, onSuccess, editingProduct }) {
                         {/* Basic Information */}
                         <div>
                             <label className="block text-sm font-medium mb-2">Product Name *</label>
-                            <Input
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                placeholder="Enter product name"
-                                required
-                            />
+                            <div className="flex gap-2">
+                                <Input
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter product name"
+                                    required
+                                    className="flex-1"
+                                />
+                                {!editingProduct && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setFormData(prev => ({ ...prev, name: generateFootwearName() }))}
+                                        className="px-3"
+                                        title="Generate new random name"
+                                    >
+                                        <Shuffle className="w-4 h-4" />
+                                    </Button>
+                                )}
+                            </div>
+                            {!editingProduct && (
+                                <p className="text-xs text-gray-500 mt-1">
+                                    Random African slip-on footwear name generated. Click the shuffle button for a new one or edit manually.
+                                </p>
+                            )}
                         </div>
 
                         <div>
